@@ -4,14 +4,14 @@
 ## demo
 http://35.204.63.61:3000/
 
-![](header.png)
+![](header.jpg)
 
 ## Release History
 
 * 0.0.1
     * Work in progress
         
-##Todo
+## Todo
 - [ ] Mobile support
 - [ ] Points
 

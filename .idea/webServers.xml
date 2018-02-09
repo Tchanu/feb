@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="5b94fbde-bfb7-4e5b-aba4-3b10bc354f12" name="35.204.63.61" url="http://35.204.63.61">
+        <fileTransfer host="35.204.63.61" port="22" privateKey="C:\Users\tchan\Documents\gcloud.ppk" rootFolder="/home/tchanu" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

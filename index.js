@@ -21,12 +21,11 @@ app.get('/media/not.mp3', function(req, res){
     res.sendFile(__dirname + '/public/media/not.mp3');
 });
 
+app.get('/media/pencil.ico', function(req, res){
+    res.sendFile(__dirname + '/public/media/pencil.ico');
+})
+
 io.on('connection', function(socket){
-    //assing color
-    if(typeof socket.color === 'undefined' ){
-        socket.color = COLORS[[Math.floor(Math.random()*COLORS.length)]];
-        io.to(socket.id).emit('update-color',socket.color);
-    }
     io.to(socket.id).emit('chat', {
         user: 'system',
         color: 'red',
@@ -40,9 +39,14 @@ io.on('connection', function(socket){
         if(typeof socket.user === 'undefined' ){
             if(msg.data.split('!name').length > 1){
                 socket.user = msg.data.split('!name')[1];
+
+                socket.color = COLORS[[Math.floor(Math.random()*COLORS.length)]];
+                io.to(socket.id).emit('update-color',socket.color);
+
                 users.push({
                     id: socket.id,
-                    user: msg.data.split('!name')[1]
+                    user: msg.data.split('!name')[1],
+                    color: socket.color
                 });
                 io.emit('update-online-users', users);
             }else{

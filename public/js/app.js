@@ -11,10 +11,6 @@ $(function () {
     var current = {
         color: '#222'
     };
-    var offset = $('.board').offset();
-
-
-
 
     //drawing listeners
     canvas.addEventListener('mousedown', onMouseDown, false);
@@ -53,21 +49,21 @@ $(function () {
 
     function onMouseDown(e){
         drawing = true;
-        current.x = e.clientX-offset.left;
-        current.y = e.clientY-offset.top;
+        current.x = e.clientX;
+        current.y = e.clientY;
     }
 
     function onMouseUp(e){
         if (!drawing) { return; }
         drawing = false;
-        drawLine(current.x, current.y, e.clientX-offset.left, e.clientY-offset.top, current.color, true);
+        drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
     }
 
     function onMouseMove(e){
         if (!drawing) { return; }
-        drawLine(current.x, current.y, e.clientX-offset.left, e.clientY-offset.top, current.color, true);
-        current.x = e.clientX-offset.left;
-        current.y = e.clientY-offset.top;
+        drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
+        current.x = e.clientX;
+        current.y = e.clientY;
     }
 
 
@@ -92,8 +88,8 @@ $(function () {
 
 
     function onResize() {
-        canvas.width = $('.board').width();
-        canvas.height = $('.board').height();
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
 
     $('form').submit(function(){
@@ -119,7 +115,7 @@ $(function () {
     socket.on('chat', function(msg){
         var html = '<li><span style="color:'+msg.color+';font-size:'+msg.size+'">'+msg.user+'</span>: '+msg.data+'</li>';
         $('#messages').append(html);
-        $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+        $("#messages").animate({ scrollTop: $(document).height() }, "slow");
         var audio = new Audio('../media/not.mp3');
         audio.play();
     });
@@ -134,16 +130,16 @@ $(function () {
     })
 
     socket.on('update-online-users', function (data) {
-        $('#users strong').html(data.length);
+        $('#users-panel strong').html(data.length);
 
         var users = ' ';
         for(var i=0; i < data.length; i++){
-            users +='<li><a href="javascript:msg(\''+(data[i].id)+'\');">'+(data[i].user)+'</a></li>';
+            users +='<li id="'+data[i].id+'" style="color: '+data[i].color+'"><a href="javascript:msg(\''+(data[i].id)+'\');">'+(data[i].user)+'</a></li>';
         }
         $('#online_users').html(users);
     });
 
-    socket.on('update-color', function (color) {console.log(color);
+    socket.on('update-color', function (color) {
         current.color = color;
     })
 });

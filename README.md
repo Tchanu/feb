@@ -12,6 +12,7 @@ http://35.204.63.61:3000/
     * Work in progress
         
 ## Todo
+- [x] History
 - [ ] Mobile support
 - [ ] Points
 

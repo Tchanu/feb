@@ -5,6 +5,7 @@ let COLORS = ["#F44336", "#EF5350", "#F44336", "#E53935", "#D32F2F", "#C62828", 
 let users = [];
 let typers = [];
 let access = require('fs').createWriteStream(__dirname + '/node.access.log', {flags: 'a'});
+let draw_history = [];
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
@@ -28,6 +29,7 @@ io.on('connection', (socket) => {
 
         io.emit('update-online-users', users);
         io.to(socket.id).emit('update-color', socket.color);
+        io.to(socket.id).emit('draw-history', draw_history)
         io.emit('chat', {
             user: 'system',
             color: 'red',
@@ -80,6 +82,7 @@ io.on('connection', (socket) => {
     //drawing handler
     socket.on('drawing', (data) => {
         socket.broadcast.emit('drawing', data);
+        draw_history.push(data);
     });
 
     socket.on('disconnect', (e) => {

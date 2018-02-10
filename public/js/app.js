@@ -76,7 +76,6 @@ $(function () {
     }
 
     function onDrawingEvent(data) {
-        console.log(data.x0);
         var w = canvas.width;
         var h = canvas.height;
         drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
@@ -166,6 +165,19 @@ $(function () {
     });
 
     socket.on('drawing', onDrawingEvent);
+
+
+    socket.on('draw-history', function (data) {console.log(data);
+        let i = 0;
+
+        function go() {
+            onDrawingEvent(data[i]);
+            if (++i < data.length) {
+                setTimeout(go, 10);
+            }
+        }
+        go();
+    });
 
     //drawing listeners
     canvas.addEventListener('mousedown', onMouseDown, false);

@@ -223,7 +223,7 @@ form #m {
 #messages {
     list-style-type: none;
     margin: 0em auto;
-    max-height: 192px;
+    max-height: 130px;
     overflow: hidden;
     font-size: 15px;
     padding: 0;

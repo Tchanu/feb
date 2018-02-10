@@ -7,7 +7,7 @@ $(function () {
     let socket = io();
     let canvas = document.getElementsByClassName('whiteboard')[0];
     let drawing = false;
-    let context = canvas.getContext('2d')
+    let context = canvas.getContext('2d');
     let current = {
         color: '#222'
     };
@@ -136,7 +136,7 @@ $(function () {
         $('#messages').append(html);
         $("#messages").animate({scrollTop: $(document).height()}, "slow");
         var audio = new Audio('../media/not.mp3');
-        audio.play();
+        //audio.play();
     });
 
     socket.on('typing', function (data) {
@@ -164,20 +164,26 @@ $(function () {
         $('#color').data('paletteColorPickerPlugin').reload();
     });
 
+    //socket drawing handler
     socket.on('drawing', onDrawingEvent);
 
-
+    //draw from history
     socket.on('draw-history', function (data) {console.log(data);
         let i = 0;
-
         function go() {
-            onDrawingEvent(data[i]);
             if (++i < data.length) {
+                onDrawingEvent(data[i]);
                 setTimeout(go, 10);
             }
         }
         go();
     });
+
+    socket.on('clear-history',function(e){
+        console.log('clear');
+        onResize();
+    });
+
 
     //drawing listeners
     canvas.addEventListener('mousedown', onMouseDown, false);

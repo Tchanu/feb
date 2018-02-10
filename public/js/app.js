@@ -9,17 +9,18 @@ $(function () {
     let drawing = false;
     let context = canvas.getContext('2d');
     let current = {
-        color: '#222'
+        color: '#222',
+        lineWidth: 2
     };
 
     onResize();
 
-    function drawLine(x0, y0, x1, y1, color, emit) {
+    function drawLine(x0, y0, x1, y1, color, emit, lineWidth) {
         context.beginPath();
         context.moveTo(x0, y0);
         context.lineTo(x1, y1);
         context.strokeStyle = color;
-        context.lineWidth = 2;
+        context.lineWidth = lineWidth;
         context.stroke();
         context.closePath();
 
@@ -34,7 +35,8 @@ $(function () {
             y0: y0 / h,
             x1: x1 / w,
             y1: y1 / h,
-            color: color
+            color: color,
+            lineWidth: lineWidth
         });
     }
 
@@ -49,36 +51,22 @@ $(function () {
             return;
         }
         drawing = false;
-        drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
+        drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true, current.lineWidth);
     }
 
     function onMouseMove(e) {
         if (!drawing) {
             return;
         }
-        drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
+        drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true, current.lineWidth);
         current.x = e.clientX;
         current.y = e.clientY;
-    }
-
-
-    // limit the number of events per second
-    function throttle(callback, delay) {
-        var previousCall = new Date().getTime();
-        return function () {
-            var time = new Date().getTime();
-
-            if ((time - previousCall) >= delay) {
-                previousCall = time;
-                callback.apply(null, arguments);
-            }
-        };
     }
 
     function onDrawingEvent(data) {
         var w = canvas.width;
         var h = canvas.height;
-        drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
+        drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, false, data.lineWidth);
     }
 
 
@@ -136,7 +124,7 @@ $(function () {
         $('#messages').append(html);
         $("#messages").animate({scrollTop: $(document).height()}, "slow");
         var audio = new Audio('../media/not.mp3');
-        //audio.play();
+        audio.play();
     });
 
     socket.on('typing', function (data) {
@@ -158,22 +146,23 @@ $(function () {
         $('#online_users').html(users);
     });
 
-    socket.on('update-color', function (color) {
-        current.color = color;
-        $('#color').val(color);
-        $('#color').data('paletteColorPickerPlugin').reload();
+    socket.on('update-pencil', function (data) {
+        current.color = data.color;
+        current.lineWidth = data.lineWidth;
+        $('#color').val(data.color).data('paletteColorPickerPlugin').reload();
     });
 
     //socket drawing handler
     socket.on('drawing', onDrawingEvent);
 
     //draw from history
-    socket.on('draw-history', function (data) {console.log(data);
+    socket.on('draw-history', function (data) {
+        onResize();
         let i = 0;
         function go() {
             if (++i < data.length) {
                 onDrawingEvent(data[i]);
-                setTimeout(go, 10);
+                setTimeout(go, 20);
             }
         }
         go();
@@ -189,7 +178,7 @@ $(function () {
     canvas.addEventListener('mousedown', onMouseDown, false);
     canvas.addEventListener('mouseup', onMouseUp, false);
     canvas.addEventListener('mouseout', onMouseUp, false);
-    canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+    canvas.addEventListener('mousemove', onMouseMove, false);
 
     //todo touch support
 

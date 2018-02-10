@@ -21,16 +21,18 @@ Io.on('connection', (socket) => {
     //auth
     socket.on('auth', (name) => {
         socket.color = COLORS[[Math.floor(Math.random() * COLORS.length)]];
+        socket.lineWidth = 2;
         socket.user = name;
         users.push({
             id: socket.id,
             user: socket.user,
-            color: socket.color
+            color: socket.color,
+            lineWidth: socket.lineWidth
         });
         access.write((new Date()) + ' ' + socket.handshake.address + ' |name|  ' + name + '\n');
 
         Io.emit('update-online-users', users);
-        Io.to(socket.id).emit('update-color', socket.color);
+        Io.to(socket.id).emit('update-pencil', {color: socket.color, lineWidth: socket.lineWidth});
         Io.to(socket.id).emit('draw-history', draw_history);
         Io.emit('chat', {
             user: 'system',
@@ -122,7 +124,7 @@ function clearHistory(timer) {
 
             }
             timer = 0;
-            clearHistory(clearingHistoryIn);
+            clearingHistoryIn = timer
         }else{
             Io.emit('chat',{
                 user: 'Board',
@@ -130,8 +132,8 @@ function clearHistory(timer) {
                 data: 'Clearing field in '+(ClearHistoryEvery-timer)+' min.'
             });
             clearingHistoryIn = ++timer;
-            clearHistory(clearingHistoryIn);
         }
+        clearHistory(clearingHistoryIn);
     }, 60000);
 }
 clearHistory(1);

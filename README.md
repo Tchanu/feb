@@ -1,15 +1,19 @@
-# Simple Socket Chat
-> This simple chat is written on nodejs with socketio.
+# Feb
+> Draw and chat with friends. Developed on socket.io
 
 ## demo
 http://35.204.63.61:3000/
 
-![](header.png)
+![](header.jpg)
 
 ## Release History
 
 * 0.0.1
     * Work in progress
+        
+## Todo
+- [ ] Mobile support
+- [ ] Points
 
 ## Meta
 

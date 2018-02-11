@@ -4,6 +4,7 @@
   "description": "Draw and chat with friends.",
   "dependencies": {
     "express": "^4.16.2",
+    "jimp": "^0.2.28",
     "socket.io": "^2.0.4"
   }
 }

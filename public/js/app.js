@@ -46,7 +46,6 @@ $(function () {
     }
 
     function drawImage(data) {
-        console.log(data);
         let image = new Image(),
             x = canvas.width * data.x,
             y = canvas.height * data.y;
@@ -205,7 +204,11 @@ $(function () {
 
         function go() {
             if (++i < data.length) {
-                onDrawingEvent(data[i]);
+                if (typeof data[i].src === 'undefined') {
+                    onDrawingEvent(data[i]);
+                } else {
+                    drawImage(data[i]);
+                }
                 setTimeout(go, 5);
             }
         }
@@ -219,6 +222,13 @@ $(function () {
     });
 
     socket.on('draw-image', drawImage);
+
+    socket.on('disconnect', function (e) {
+        location.reload();
+    });
+    socket.on('disconnect', function (e) {
+        location.reload();
+    });
 
 
     //drawing listeners

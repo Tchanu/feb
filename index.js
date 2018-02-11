@@ -173,24 +173,46 @@ function cmdHandler(socket, msg) {
                 Io.emit('chat', {
                     user: 'Wolfram',
                     color: '#FF7D00',
-                    data: 'Solving '+cmd[2]
+                    data: cmd[2]
                 });
                 Request('http://api.wolframalpha.com/v2/query?appid=UWULYY-9VRJKLKEQU&input=' + decodeURIComponent(cmd[2]), function (error, response, body) {
                     ParseString(body, function (err, result) {
-                        let plot = result.queryresult.pod[2].subpod[0].img[0].$.src;
-                        let ans = result.queryresult.pod[1].subpod[0].plaintext[0];
+                        try {
+                            let plot = result.queryresult.pod[2].subpod[0].img[0].$.src;
+                            let ans = result.queryresult.pod[1].subpod[0].plaintext[0];
 
-                        Io.emit('chat', {
-                            user: 'Wolfram',
-                            color: '#FF7D00',
-                            data: 'Result '+ans
-                        });
-                        drawImage(plot, false, socket.id);
+                            Io.emit('chat', {
+                                user: 'Wolfram',
+                                color: '#FF7D00',
+                                data: 'Result ' + ans
+                            });
+                            drawImage(plot, false, socket.id);
+                        } catch (err) {
+                            console.log(err)
+                        }
                     });
                 });
             } catch (err) {
                 console.log(err);
             }
+            return true;
+        case 'todo':
+            Request('http://35.204.63.61:3001/api/tasks', function (error, response, body) {
+                try{
+                    let data = JSON.parse(body);
+                    for(let i =0;i < data.length;i++){
+                        let html = data[i].title+' '+((data[i].status === 2)? '<span style="color:#4CAF50">✔</span>' : '<span style="color:#F44336">✕</span>');
+                        Io.emit('chat', {
+                            user: 'Tasuku',
+                            color: '#FF7D00',
+                            data: html
+                        });
+                    }
+
+                }catch (err){
+                    console.log(err);
+                }
+            });
             return true;
         default:
             return false;
@@ -202,19 +224,20 @@ function drawImage(src, notification = true, id = null) {
     data.src = src;
     Jimp.read(data.src, function (err, image) {
         if (err === null) {
-            data.x = Math.random() * 0.7 + 0.01;
-            data.y = Math.random() * 0.7 + 0.01;
+            data.x = Math.random() * 0.5 + 0.01;
+            data.y = Math.random() * 0.5 + 0.01;
             let scale = imageScale / image.bitmap.height;
             data.width = image.bitmap.width * scale;
             data.height = imageScale * 1.95;
             Io.emit('draw-image', data);
-            if(notification){
+            if (notification) {
                 Io.emit('chat', {
                     user: 'Board',
                     color: '#A1887F',
                     data: 'Drawing ' + data.src
                 });
             }
+            draw_history.push(data);
         } else {
             systemMsg(id, 'Image cannot be loaded.');
         }

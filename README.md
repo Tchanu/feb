@@ -8,7 +8,7 @@ http://35.204.63.61:3000/
 
 ## Release History
 
-* 0.0.1
+* 0.9.8
     * Work in progress
         
 ## Todo

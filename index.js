@@ -115,6 +115,9 @@ Io.on('connection', (socket) => {
 //commands
 function cmdHandler(socket, msg) {
     let cmd = /^!([a-z]*).?(.*)$/g.exec(msg);
+    if (cmd === null) {
+        return false;
+    }
     switch (cmd[1]) {
         case 'clear':
             if (ClearVotes.filter((item) => {

@@ -5,6 +5,7 @@ window.isTypingTimer = null;
 window.voiceEnabled = true;
 
 let notificationSound = new Audio('../media/not.mp3');
+let audio = new Audio();
 
 $(function () {
     let socket = io(),
@@ -119,6 +120,15 @@ $(function () {
         //todo call
     }
 
+    function soundHandler(data) {
+        audio.src = data.src;
+        if(data.play && audio.paused){
+            audio.play();
+        }else{
+            audio.pause();
+        }
+    }
+
 
     //--------------------------------key events
     $('form').submit(function () {
@@ -165,8 +175,7 @@ $(function () {
         if (window.voiceEnabled) {
             notificationSound.play();
         }
-
-
+        $('#messages li:nth-last-child(n+6)').remove();
     });
 
     socket.on('typing', function (data) {
@@ -223,9 +232,8 @@ $(function () {
 
     socket.on('draw-image', drawImage);
 
-    socket.on('disconnect', function (e) {
-        location.reload();
-    });
+    socket.on('sound', soundHandler)
+
     socket.on('disconnect', function (e) {
         location.reload();
     });

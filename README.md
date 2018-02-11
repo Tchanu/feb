@@ -1,5 +1,5 @@
 # Feb
-> Draw and chat with friends. Developed on socket.io
+> Draw, chat, learn, listen to music with friends. Developed on socket.io
 
 ## demo
 http://35.204.63.61:3000/
@@ -13,8 +13,11 @@ http://35.204.63.61:3000/
         
 ## Todo
 - [x] History
+- [x] Images
+- [x] Todo
+- [x] Wolfram
+- [x] Youtube
 - [ ] Mobile support
-- [ ] Points
 
 ## Meta
 

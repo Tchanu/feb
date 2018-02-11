@@ -6,8 +6,7 @@ let users = [];
 let typers = [];
 let access = require('fs').createWriteStream(__dirname + '/node.access.log', {flags: 'a'});
 let draw_history = [];
-let ClearHistoryEvery = 2;//Clear history every x min
-let clearingHistoryIn = 0;//time left
+let ClearVotes = [];
 
 App.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
@@ -34,9 +33,14 @@ Io.on('connection', (socket) => {
         Io.emit('update-online-users', users);
         Io.to(socket.id).emit('update-pencil', {color: socket.color, lineWidth: socket.lineWidth});
         Io.to(socket.id).emit('draw-history', draw_history);
+        Io.to(socket.id).emit('chat', {
+            user: 'system',
+            color: '#F44336',
+            data: 'Available commands: !clear, !size [1..5]'
+        });
         Io.emit('chat', {
             user: 'system',
-            color: 'red',
+            color: '#F44336',
             data: 'welcome to ' + name
         });
     });
@@ -45,6 +49,58 @@ Io.on('connection', (socket) => {
     socket.on('chat', (msg) => {
         access.write((new Date()) + ' ' + socket.handshake.address + '  |msg|  ' + msg + '\n');
         if (typeof socket.user === 'undefined') {
+            return;
+        }
+
+        if (msg.split('!clear').length > 1) {
+            if (ClearVotes.filter((item) => {
+                    return item === socket.id
+                }).length === 0) {
+                ClearVotes.push(socket.id);
+                Io.emit('chat', {
+                    user: 'Board',
+                    color: '#F44336',
+                    data: socket.user + ' voted to clear.' + (Math.floor(users.length * 0.6)+ 1 - ClearVotes.length) + ' votes to go.'
+                });
+            }
+            if (ClearVotes.length > users.length * 0.6) {
+                try {
+                    ClearVotes = [];
+                    Io.emit('clear-history', true);
+                    draw_history = [];
+                    Io.emit('chat', {
+                        user: 'Board',
+                        color: '#F44336',
+                        data: 'Field Cleared'
+                    });
+                } catch (err) {
+
+                }
+
+            }
+            return;
+        }
+        if (msg.split('!size').length > 1){
+            try{
+                let lineWidth = msg.split('!size')[1].substr(1);
+                if(lineWidth >= 1 && lineWidth <= 16){
+                    socket.lineWidth = lineWidth;
+                    Io.to(socket.id).emit('update-pencil', {color: socket.color, lineWidth: socket.lineWidth});
+                    Io.to(socket.id).emit('chat', {
+                        user: 'system',
+                        color: '#304FFE',
+                        data: 'Pencil size changed to '+lineWidth
+                    });
+                }else{
+                    Io.to(socket.id).emit('chat', {
+                        user: 'system',
+                        color: '#F44336',
+                        data: 'Pencil size must be between 1-16'
+                    });
+                }
+            }catch(err){
+
+            }
             return;
         }
 
@@ -109,34 +165,17 @@ Io.on('connection', (socket) => {
 });
 
 //clear
-function clearHistory(timer) {
+function clearHistoryAd(timer) {
     setTimeout(() => {
-        if(timer === ClearHistoryEvery){//min
-            try{
-                Io.emit('clear-history',true);
-                draw_history = [];
-                Io.emit('chat',{
-                    user: 'Board',
-                    color: 'red',
-                    data: 'Field Cleared'
-                });
-            }catch (err){
-
-            }
-            timer = 0;
-            clearingHistoryIn = timer
-        }else{
-            Io.emit('chat',{
-                user: 'Board',
-                color: 'red',
-                data: 'Clearing field in '+(ClearHistoryEvery-timer)+' min.'
-            });
-            clearingHistoryIn = ++timer;
-        }
-        clearHistory(clearingHistoryIn);
+        Io.emit('chat', {
+            user: 'Board',
+            color: '#F44336',
+            data: 'Type !clear to vote for clear.'
+        });
     }, 60000);
 }
-clearHistory(1);
+
+clearHistoryAd(1);
 
 Http.listen(3000, () => {
     console.log('listening on *:3000');

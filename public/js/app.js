@@ -2,6 +2,9 @@
 
 window.isTyping = false;
 window.isTypingTimer = null;
+window.voiceEnabled = true;
+
+let notificationSound = new Audio('../media/not.mp3');
 
 $(function () {
     let socket = io();
@@ -21,6 +24,8 @@ $(function () {
         context.lineTo(x1, y1);
         context.strokeStyle = color;
         context.lineWidth = lineWidth;
+        context.lineJoin = 'round';
+        context.lineCap = 'round';
         context.stroke();
         context.closePath();
 
@@ -87,7 +92,9 @@ $(function () {
 
     //--------------------------------key events
     $('form').submit(function () {
-        socket.emit('chat', $('#m').val());
+        let msg = $('#m').val();
+        if (msg.length < 1) return false;
+        socket.emit('chat', msg);
         $('#m').val('');
         endTyping();
         return false;
@@ -103,13 +110,14 @@ $(function () {
     });
 
     $('#nameInput').keyup(function (event) {
+        let $welcome_btn = $('#welcome .btn');
         if (event.keyCode === 13) {
-            $('#welcome .btn').click();
+            $welcome_btn.click();
         }
         if ($(this).val().length > 2) {
-            $('#welcome .btn').show();
+            $welcome_btn.show();
         } else {
-            $('#welcome .btn').hide();
+            $welcome_btn.hide();
         }
     });
 
@@ -122,9 +130,13 @@ $(function () {
     socket.on('chat', function (msg) {
         var html = '<li><span style="color:' + msg.color + ';">' + msg.user + '</span>: ' + msg.data + '</li>';
         $('#messages').append(html);
-        $("#messages").animate({scrollTop: $(document).height()}, "slow");
-        var audio = new Audio('../media/not.mp3');
-        audio.play();
+        var elem = document.getElementById('messages');
+        elem.scrollTop = elem.scrollHeight;
+        if (window.voiceEnabled) {
+            notificationSound.play();
+        }
+
+
     });
 
     socket.on('typing', function (data) {
@@ -159,16 +171,18 @@ $(function () {
     socket.on('draw-history', function (data) {
         onResize();
         let i = 0;
+
         function go() {
             if (++i < data.length) {
                 onDrawingEvent(data[i]);
-                setTimeout(go, 20);
+                setTimeout(go, 5);
             }
         }
+
         go();
     });
 
-    socket.on('clear-history',function(e){
+    socket.on('clear-history', function (e) {
         console.log('clear');
         onResize();
     });

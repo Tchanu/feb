@@ -36,7 +36,7 @@ Io.on('connection', (socket) => {
         Io.to(socket.id).emit('chat', {
             user: 'system',
             color: '#F44336',
-            data: 'Available commands: !clear, !size [1..5]'
+            data: 'Available commands: !clear, !size [1-16]'
         });
         Io.emit('chat', {
             user: 'system',

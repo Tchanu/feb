@@ -31,79 +31,28 @@ Io.on('connection', (socket) => {
         access.write((new Date()) + ' ' + socket.handshake.address + ' |name|  ' + name + '\n');
 
         Io.emit('update-online-users', users);
-        Io.to(socket.id).emit('update-pencil', {color: socket.color, lineWidth: socket.lineWidth});
+        updatePencil(Io, socket);
         Io.to(socket.id).emit('draw-history', draw_history);
-        Io.to(socket.id).emit('chat', {
-            user: 'system',
-            color: '#F44336',
-            data: 'Available commands: !clear, !size [1-16]'
-        });
-        Io.emit('chat', {
-            user: 'system',
-            color: '#F44336',
-            data: 'welcome to ' + name
-        });
+        systemMsg(socket.id, 'Available commands: !clear, !size [1-16]');
+        systemMsg(null, 'welcome to ' + name);
     });
 
     //chat handler
     socket.on('chat', (msg) => {
+        //log to file
         access.write((new Date()) + ' ' + socket.handshake.address + '  |msg|  ' + msg + '\n');
+
+        //unauthorized
         if (typeof socket.user === 'undefined') {
             return;
         }
 
-        if (msg.split('!clear').length > 1) {
-            if (ClearVotes.filter((item) => {
-                    return item === socket.id
-                }).length === 0) {
-                ClearVotes.push(socket.id);
-                Io.emit('chat', {
-                    user: 'Board',
-                    color: '#F44336',
-                    data: socket.user + ' voted to clear.' + (Math.floor(users.length * 0.6)+ 1 - ClearVotes.length) + ' votes to go.'
-                });
-            }
-            if (ClearVotes.length > users.length * 0.6) {
-                try {
-                    ClearVotes = [];
-                    Io.emit('clear-history', true);
-                    draw_history = [];
-                    Io.emit('chat', {
-                        user: 'Board',
-                        color: '#F44336',
-                        data: 'Field Cleared'
-                    });
-                } catch (err) {
-
-                }
-
-            }
-            return;
-        }
-        if (msg.split('!size').length > 1){
-            try{
-                let lineWidth = msg.split('!size')[1].substr(1);
-                if(lineWidth >= 1 && lineWidth <= 16){
-                    socket.lineWidth = lineWidth;
-                    Io.to(socket.id).emit('update-pencil', {color: socket.color, lineWidth: socket.lineWidth});
-                    Io.to(socket.id).emit('chat', {
-                        user: 'system',
-                        color: '#304FFE',
-                        data: 'Pencil size changed to '+lineWidth
-                    });
-                }else{
-                    Io.to(socket.id).emit('chat', {
-                        user: 'system',
-                        color: '#F44336',
-                        data: 'Pencil size must be between 1-16'
-                    });
-                }
-            }catch(err){
-
-            }
+        //command
+        if (cmdHandler(socket, msg)) {
             return;
         }
 
+        //
         Io.emit('chat', {
             user: socket.user,
             color: socket.color,
@@ -136,7 +85,6 @@ Io.on('connection', (socket) => {
         }
 
         Io.emit('typing', typers);
-
     });
 
     //drawing handler
@@ -163,6 +111,75 @@ Io.on('connection', (socket) => {
         Io.emit('update-online-users', users);
     });
 });
+
+//commands
+function cmdHandler(socket, msg) {
+    let cmd = /^!([a-z]*).?(.*)$/g.exec(msg);
+    switch (cmd[1]) {
+        case 'clear':
+            if (ClearVotes.filter((item) => {
+                    return item === socket.id
+                }).length === 0) {
+                ClearVotes.push(socket.id);
+            }
+            if (ClearVotes.length > users.length * 0.6) {
+                try {
+                    ClearVotes = [];
+                    Io.emit('clear-history', true);
+                    draw_history = [];
+                    Io.emit('chat', {
+                        user: 'Board',
+                        color: '#A1887F',
+                        data: 'Field Cleared'
+                    });
+                } catch (err) {
+                    console.log(err);
+                }
+
+            } else {
+                Io.emit('chat', {
+                    user: 'Board',
+                    color: '#A1887F',
+                    data: socket.user + ' voted to clear. ' + (Math.floor(users.length * 0.6) + 1 - ClearVotes.length) + ' votes to go.'
+                });
+            }
+            return true;
+        case 'size':
+            try {
+                let lineWidth = cmd[2];
+                if (lineWidth >= 1 && lineWidth <= 16) {
+                    socket.lineWidth = lineWidth;
+                    updatePencil(Io, socket);
+                    systemMsg(socket.id, 'Pencil size changed to ' + lineWidth);
+                } else {
+                    systemMsg(socket.id, 'Pencil size must be between 1-16');
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            return true;
+        default:
+            return false;
+    }
+}
+
+function systemMsg(socket_id, msg) {
+    let data = {
+        user: 'system',
+        color: '#F44336',
+        data: msg
+    };
+    if (socket_id === null) {
+        Io.emit('chat', data);
+    } else {
+        Io.to(socket_id).emit('chat', data);
+    }
+
+}
+
+function updatePencil(Io, socket) {
+    Io.to(socket.id).emit('update-pencil', {color: socket.color, lineWidth: socket.lineWidth});
+}
 
 //clear
 function clearHistoryAd(timer) {

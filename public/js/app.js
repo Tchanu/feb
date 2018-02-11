@@ -32,8 +32,8 @@ $(function () {
         if (!emit) {
             return;
         }
-        var w = canvas.width;
-        var h = canvas.height;
+        let w = canvas.width,
+            h = canvas.height;
 
         socket.emit('drawing', {
             x0: x0 / w,

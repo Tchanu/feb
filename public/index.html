@@ -7,6 +7,7 @@
           content="width=device-width, initial-scale=1, user-scalable=yes">
     <meta name="msapplication-tap-highlight" content="no"/>
     <link ref="stylesheet" media="all" type="text/css" rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <title>Feb</title>
 </head>
@@ -17,16 +18,22 @@
 </div>
 <canvas class="whiteboard"></canvas>
 
-<div class="footer">
+<div class="msg-block">
+    <div class="header"></div>
     <ul id="messages"></ul>
-    <div class="content">
-        <div class="is-typing">
-            <span id="typing_user"></span> is typing...
-        </div>
+    <div class="separator"></div>
+    <div class="is-typing">
+        <span id="typing_user"></span> is typing...
+    </div>
+    <div class="msg-area">
         <form action="">
             <input type="hidden" name="color-picker" id="color" style="display: none" value="">
-
             <input id="m" autocomplete="off"/>
+
+            <!-- Buttons -->
+            <div class="input-btn image"></div>
+            <div class="input-btn youtube"></div>
+            <div class="input-btn wolfram"></div>
         </form>
     </div>
 </div>
@@ -45,6 +52,7 @@
         src="http://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
 </body>
 </html>

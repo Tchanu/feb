@@ -21,14 +21,14 @@ App.get('/', (req, res) => {
 });
 
 App.get('/stream', (req, res) => {
-    if(currentYoutubeSource.length > 5){
-        try{
+    if (currentYoutubeSource.length > 5) {
+        try {
             Ytdl(currentYoutubeSource)
                 .pipe(res);
-        }catch (err){
+        } catch (err) {
             res.sendStatus(503);
         }
-    }else{
+    } else {
         res.sendStatus(503);
     }
 });
@@ -54,7 +54,15 @@ Io.on('connection', (socket) => {
         Io.emit('update-online-users', users);
         updatePencil(Io, socket);
         Io.to(socket.id).emit('draw-history', draw_history);
-        systemMsg(socket.id, 'Available commands: !clear, !size 1-16, !image imageUrl, !todo, !play youtubeUrl, !stop, !wolfram solve x^2 - 16 = 0');
+        systemMsg(socket.id, 'Commands you should try <br>' +
+            '<span style="color: #43A047;">!clear</span><br> ' +
+            '<span style="color: #43A047;">!size</span> <span style="color: #9575CD;">1-16</span><br> ' +
+            '<span style="color: #43A047;">!image</span> <span style="color: #9575CD;">imageUrl</span><br> ' +
+            '<span style="color: #43A047;">!todo</span><br>' +
+            '<span style="color: #43A047;">!play</span> <span style="color: #9575CD;">youtubeUrl</span><br> ' +
+            '<span style="color: #43A047;">!stop</span><br>' +
+            '<span style="color: #43A047;">!wolfram</span> ' +
+            '<span style="color: #9575CD;">solve x^2 - 16 = 0</span>');
         systemMsg(null, 'welcome to ' + name);
     });
 
@@ -236,11 +244,11 @@ function cmdHandler(socket, msg) {
                 let source = cmd[2];
                 if (source.length > 1) {
                     currentYoutubeSource = source;
-                    Io.emit('sound', {play: true, src: 'http://'+SERVER_IP+':'+SERVER_PORT+'/stream'});
+                    Io.emit('sound', {play: true, src: 'http://' + SERVER_IP + ':' + SERVER_PORT + '/stream'});
                     Io.emit('chat', {
                         user: 'Youtube',
                         color: '#FF0000',
-                        data: 'Playing  '+cmd[2]
+                        data: 'Playing  ' + cmd[2]
                     });
                 }
             } catch (err) {
@@ -249,7 +257,7 @@ function cmdHandler(socket, msg) {
             return true;
         case 'stop':
             try {
-                Io.emit('sound', {play: false, src: 'http://'+SERVER_IP+':'+SERVER_PORT+'/stream'});
+                Io.emit('sound', {play: false, src: 'http://' + SERVER_IP + ':' + SERVER_PORT + '/stream'});
                 Io.emit('chat', {
                     user: 'Youtube',
                     color: '#FF0000',
@@ -321,5 +329,5 @@ function clearHistoryAd(timer) {
 clearHistoryAd(1);
 
 Http.listen(SERVER_PORT, () => {
-    console.log('listening on *:'+SERVER_PORT);
+    console.log('listening on *:' + SERVER_PORT);
 });

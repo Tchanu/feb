@@ -17,6 +17,14 @@ $(function () {
             lineWidth: 2
         };
 
+    $(".msg-block").draggable({
+        handle: '.header',
+        containment: "canvas"
+    }).resizable({
+        minHeight: 300,
+        minWidth: 330
+    });
+
     onResize();
 
     function drawLine(x0, y0, x1, y1, color, emit, lineWidth) {
@@ -122,9 +130,9 @@ $(function () {
 
     function soundHandler(data) {
         audio.src = data.src;
-        if(data.play && audio.paused){
+        if (data.play && audio.paused) {
             audio.play();
-        }else{
+        } else {
             audio.pause();
         }
     }
@@ -163,6 +171,11 @@ $(function () {
 
     $('#welcome .btn').click(function () {
         socket.emit('auth', $('#nameInput').val());
+        $(".msg-block").animate({
+            bottom: '30px',
+            left: '50px',
+            opacity: '1'
+        }, 1500);
         $('#welcome').hide();
     })
 
@@ -170,12 +183,15 @@ $(function () {
     socket.on('chat', function (msg) {
         var html = '<li><span style="color:' + msg.color + ';">' + msg.user + '</span>: ' + msg.data + '</li>';
         $('#messages').append(html);
-        var elem = document.getElementById('messages');
-        elem.scrollTop = elem.scrollHeight;
+
+        let $e = $('#messages');
+        if ($e[0].scrollHeight - $e[0].scrollTop < $e.height() + 50) {
+            $e[0].scrollTop = $e[0].scrollHeight;
+        }
+
         if (window.voiceEnabled) {
             notificationSound.play();
         }
-        $('#messages li:nth-last-child(n+6)').remove();
     });
 
     socket.on('typing', function (data) {
@@ -218,7 +234,7 @@ $(function () {
                 } else {
                     drawImage(data[i]);
                 }
-                setTimeout(go, 5);
+                setTimeout(go, 10);
             }
         }
 
@@ -262,6 +278,16 @@ $(function () {
             console.log();
         }
     });
+
+    $('.input-btn.image').click(function () {
+        $('#m').val('!image ').focus();
+    })
+    $('.input-btn.youtube').click(function () {
+        $('#m').val('!play ').focus();
+    })
+    $('.input-btn.wolfram').click(function () {
+        $('#m').val('!wolfram ').focus();
+    })
 });
 
 

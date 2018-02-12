@@ -11,7 +11,7 @@ let typers = [];
 let access = require('fs').createWriteStream(__dirname + '/node.access.log', {flags: 'a'});
 let draw_history = [];
 let ClearVotes = [];
-let imageScale = 0.2;//
+let IMAGE_SCALE = 0.2;//
 let SERVER_IP = '35.204.63.61';
 let SERVER_PORT = 3000;
 let currentYoutubeSource = '';
@@ -211,7 +211,7 @@ function cmdHandler(socket, msg) {
                                 color: '#FF7D00',
                                 data: 'Result ' + ans
                             });
-                            drawImage(plot, false, socket.id);
+                            drawImage(plot, false, socket.id, 0.15);
                         } catch (err) {
                             console.log(err)
                         }
@@ -272,16 +272,23 @@ function cmdHandler(socket, msg) {
     }
 }
 
-function drawImage(src, notification = true, id = null) {
-    let data = {};
+function drawImage(src, notification = true, id = null, custom_scale = null) {
+    let data = {},
+        image_scale = (custom_scale === null )? IMAGE_SCALE : custom_scale;
     data.src = src;
+
     Jimp.read(data.src, function (err, image) {
         if (err === null) {
-            data.x = Math.random() * 0.5 + 0.01;
-            data.y = Math.random() * 0.5 + 0.01;
-            let scale = imageScale / image.bitmap.height;
+
+            //scaling
+            let scale = image_scale / image.bitmap.height;
             data.width = image.bitmap.width * scale;
-            data.height = imageScale * 1.95;
+            data.height = image_scale * 1.95;
+
+            //fit to canvas
+            data.x = Math.random()*(1-data.width-0.01) + 0.01;
+            data.y = Math.random()*(1-data.height-0.01) + 0.01;
+
             Io.emit('draw-image', data);
             if (notification) {
                 Io.emit('chat', {

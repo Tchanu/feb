@@ -177,15 +177,6 @@ li {
     z-index: 10;
 }
 
-.users-online-num {
-    padding: 5px;
-    background-color: rgba(0, 0, 0, 0.16);
-    font-size: 14px;
-    font-weight: 100;
-    color: #fff;
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-}
-
 .is-typing {
     color: #aaabbf;
     margin: 0.3em 1em;
@@ -203,7 +194,7 @@ li {
     background-color: rgba(72, 75, 82, 0.3);
     border: 0;
     border-radius: 0.4em;
-    padding: 10px 42px;
+    padding: 10px 120px 10px 42px;
     width: 100%;
     color: #fff;
 }
@@ -240,7 +231,7 @@ li {
     height: 350px;
     bottom: 5px;
     left: 5px;
-    border-radius: 2px;
+    border-radius: 3px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     opacity: 0;
 }
@@ -248,13 +239,31 @@ li {
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 .msg-block .header{
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-    height: 25px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    height: 30px;
     width: 100%;
-    background-color: #919191;
     cursor: move;
+    padding: 0 0 0 10px;
+    font-size: 11px;
+    font-weight: 100;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    -moz-box-shadow:  1px 2px rgba(0, 0, 0, 0.15);
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
+
+.msg-block .header span{
+    opacity: 0.9;
+}
+
+.msg-block .header:hover span{
+    opacity: 1;
+}
+
 
 .swatch.clear {
 
@@ -266,13 +275,18 @@ li {
     overflow-x: hidden;
     overflow-y: scroll;
     font-size: 15px;
-    height: calc(100% - 100px);
+    height: calc(100% - 105px);
 }
 
 #messages li {
     font-size: 15px;
     padding: 2px 0px;
     color: #aaabbf;
+}
+
+#messages li .name{
+    text-transform: uppercase;
+    font-size: 12px;
 }
 
 .separator{

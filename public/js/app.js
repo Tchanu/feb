@@ -54,7 +54,7 @@ $(function () {
         });
     }
 
-    function drawImage(data) {
+    function drawImage(data) {console.log(data);
         let image = new Image(),
             x = canvas.width * data.x,
             y = canvas.height * data.y;
@@ -181,7 +181,7 @@ $(function () {
 
     //--------------------------------socket events
     socket.on('chat', function (msg) {
-        var html = '<li><span style="color:' + msg.color + ';">' + msg.user + '</span>: ' + msg.data + '</li>';
+        var html = '<li><span style="color:' + msg.color + ';" class="name">' + msg.user + '</span>  ' + msg.data + '</li>';
         $('#messages').append(html);
 
         let $e = $('#messages');
@@ -204,13 +204,14 @@ $(function () {
     })
 
     socket.on('update-online-users', function (data) {
-        $('#users-panel strong').html(data.length);
+        //$('#users-panel strong').html(data.length);
 
-        var users = ' ';
+        var html = ' ';
         for (var i = 0; i < data.length; i++) {
-            users += '<li id="' + data[i].id + '" style="color: ' + data[i].color + '"><a href="javascript:call(\'' + (data[i].id) + '\');">' + (data[i].user) + '</a></li>';
+            //users += '<li id="' + data[i].id + '" style="color: ' + data[i].color + '"><a href="javascript:call(\'' + (data[i].id) + '\');">' + (data[i].user) + '</a></li>';
+            html += '<span style="color: ' + data[i].color + '">'+data[i].user+'  '
         }
-        $('#online_users').html(users);
+        $('#online_users').html(html);
     });
 
     socket.on('update-pencil', function (data) {

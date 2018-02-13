@@ -166,17 +166,6 @@ li {
     cursor: url('../media/pencil.png'), default;
 }
 
-#users-panel {
-    position: fixed;
-    top: 2em;
-    right: 0;
-    font-size: 2em;
-    background-color: rgba(0, 0, 0, 0.02);
-    min-width: 200px;
-    min-height: 30px;
-    z-index: 10;
-}
-
 .is-typing {
     color: #aaabbf;
     margin: 0.3em 1em;

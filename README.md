@@ -1,8 +1,6 @@
 # Feb
-> Draw, chat, learn, listen to music with friends. Developed on socket.io
+> Draw, chat, learn, and listen to music with friends. Developed on socket.io
 
-## demo
-http://35.204.63.61:3000/
 
 ![](header.jpg)
 
